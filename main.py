@@ -6,7 +6,7 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your Next.js frontend URL
+    allow_origins=["*"],  # CHANGE THIS TO YOUR FRONTEND URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,6 +33,10 @@ async def handle_websocket(websocket: WebSocket):
 @app.websocket("/")
 async def root_websocket(websocket: WebSocket):
     await handle_websocket(websocket)
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

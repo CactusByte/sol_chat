@@ -1,12 +1,13 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
 
-# Add CORS middleware
+# Add CORS middleware with more permissive settings for Heroku
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # CHANGE THIS TO YOUR FRONTEND URL
+    allow_origins=["*"],  # Allow all origins in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,10 +35,15 @@ async def handle_websocket(websocket: WebSocket):
 async def root_websocket(websocket: WebSocket):
     await handle_websocket(websocket)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await handle_websocket(websocket)
+
+# Add a health check endpoint
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
